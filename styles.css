@@ -1,0 +1,88 @@
+/* styles.css */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+#auth-container {
+    text-align: center;
+    margin-top: 50px;
+}
+
+#login-form input {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+}
+
+#login-form button {
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.progress-container {
+    margin: 20px 0;
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    height: 20px;
+    background: #4CAF50;
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.5s;
+}
+
+#topics-container {
+    margin: 30px 0;
+}
+
+.topic-item {
+    padding: 15px;
+    margin: 10px 0;
+    background: #f9f9f9;
+    border-left: 4px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+}
+
+.topic-completed {
+    border-color: #4CAF50;
+    background: #e8f5e9;
+}
+
+.alert {
+    border-color: #f44336;
+    background: #ffebee;
+}
+
+#admin-panel {
+    display: flex;
+    margin: 20px 0;
+}
+
+#new-topic {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 16px;
+}
+
+#add-topic-btn {
+    padding: 10px 20px;
+    margin-left: 10px;
+}
