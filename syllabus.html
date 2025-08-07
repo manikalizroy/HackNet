@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syllabus - Smart Syllabus Tracker</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Custom CSS - Embedded for demonstration */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-search {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .header-search input {
+            width: 100%;
+            padding: 0.5rem 0.5rem 0.5rem 2.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .header-search i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-icon {
+            position: relative;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+        }
+
+        .user-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .user-dropdown img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .dashboard-content {
+            padding: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .syllabus-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .syllabus-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .progress-indicator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .progress-bar {
+            width: 120px;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #666;
+        }
+
+        .content-container {
+            padding: 2rem;
+        }
+
+        .course-info-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .info-card h3 {
+            margin-bottom: 1rem;
+            color: #495057;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .instructor-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .instructor-info img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+        }
+
+        .schedule-list, .details-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .schedule-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            color: #495057;
+        }
+
+        .schedule-list i {
+            color: #667eea;
+            width: 16px;
+        }
+
+        .details-list li {
+            padding: 0.5rem 0;
+            color: #495057;
+        }
+
+        .topics-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .topic-week {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .week-header {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .week-header h3 {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .week-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-badge.completed {
+            background: #d1edff;
+            color: #0066cc;
+        }
+
+        .status-badge.in-progress {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.upcoming {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .week-progress {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .week-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .topic-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .topic-checkbox {
+            flex-shrink: 0;
+        }
+
+        .topic-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #667eea;
+        }
+
+        .topic-details {
+            flex: 1;
+        }
+
+        .topic-details h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .topic-details p {
+            margin: 0;
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        .topic-resources {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .resource-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .resource-link:hover {
+            color: #5a67d8;
+        }
+
+        .assessment-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .assessment-item {
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .assessment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .assessment-header h3 {
+            margin: 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .assessment-weight {
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .materials-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .material-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .material-icon {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .material-details h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .material-details p {
+            margin: 0;
+            color: #666;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .modal-body {
+            max-height: calc(90vh - 180px);
+            overflow-y: auto;
+        }
+
+        .edit-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .edit-tab {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            color: #666;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .edit-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .edit-content {
+            padding: 2rem;
+        }
+
+        .edit-section {
+            display: none;
+        }
+
+        .edit-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .modal-footer {
+            background: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #e0e0e0;
+            color: #495057;
+        }
+
+        .btn-outline:hover {
+            background: #f8f9fa;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .dashboard-header {
+                padding: 1rem;
+            }
+
+            .header-search {
+                max-width: none;
+                flex: 1;
+            }
+
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .course-info-container {
+                grid-template-columns: 1fr;
+            }
+
+            .assessment-container {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar-container">
+            <div class="sidebar-brand">
+                <h3>Syllabus Tracker</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#" class="active"><i class="fas fa-book"></i> Syllabus</a></li>
+                    <li><a href="#"><i class="fas fa-calendar"></i> Schedule</a></li>
+                    <li><a href="#"><i class="fas fa-tasks"></i> Assignments</a></li>
+                    <li><a href="#"><i class="fas fa-chart-bar"></i> Progress</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search in syllabus...">
+                </div>
+                <div class="header-actions">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notification-count">0</span>
+                    </div>
+                    <div class="user-dropdown">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23e0e0e0'/%3E%3Ccircle cx='12' cy='10' r='3' fill='%23666'/%3E%3Cpath d='M6.168 18.849A6 6 0 0 1 12 16a6 6 0 0 1 5.832 2.849' fill='%23666'/%3E%3C/svg%3E" alt="User Avatar" id="header-avatar">
+                        <span id="header-user-name">User Name</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <div class="page-header syllabus-header">
+                    <div>
+                        <h1 id="course-title">Introduction to Computer Science</h1>
+                        <p id="course-code">CS101</p>
+                    </div>
+                    <div class="syllabus-actions" id="faculty-actions" style="display: none;">
+                        <button id="edit-syllabus-btn" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Edit Syllabus
+                        </button>
+                        <button id="publish-syllabus-btn" class="btn btn-success">
+                            <i class="fas fa-check-circle"></i> Publish Changes
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Course Information -->
+                <section class="syllabus-section">
+                    <div class="section-header">
+                        <h2>Course Information</h2>
+                        <div class="progress-indicator" id="info-progress">
+                            <span class="progress-text">100% Complete</span>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-container">
+                        <div class="course-info-container">
+                            <div class="info-card">
+                                <h3>Instructor</h3>
+                                <div class="instructor-info">
+                                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23667eea'/%3E%3Ccircle cx='12' cy='10' r='3' fill='white'/%3E%3Cpath d='M6.168 18.849A6 6 0 0 1 12 16a6 6 0 0 1 5.832 2.849' fill='white'/%3E%3C/svg%3E" alt="Instructor Avatar" id="instructor-avatar">
+                                    <div>
+                                        <p id="instructor-name">Dr. John Smith</p>
+                                        <p id="instructor-email">john.smith@university.edu</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="info-card">
+                                <h3>Schedule</h3>
+                                <ul class="schedule-list">
+                                    <li><i class="fas fa-calendar-day"></i> <span id="class-days">Monday, Wednesday, Friday</span></li>
+                                    <li><i class="fas fa-clock"></i> <span id="class-time">10:00 AM - 11:30 AM</span></li>
+                                    <li><i class="fas fa-map-marker-alt"></i> <span id="class-location">Room 302, CS Building</span></li>
+                                </ul>
+                            </div>
+                            <div class="info-card">
+                                <h3>Course Details</h3>
+                                <ul class="details-list">
+                                    <li><strong>Credits:</strong> <span id="course-credits">3</span></li>
+                                    <li><strong>Prerequisites:</strong> <span id="course-prerequisites">None</span></li>
+                                    <li><strong>Term:</strong> <span id="course-term">Fall 2023</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Course Description -->
+                <section class="syllabus-section">
+                    <div class="section-header">
+                        <h2>Course Description</h2>
+                        <div class="progress-indicator" id="description-progress">
+                            <span class="progress-text">100% Complete</span>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-container">
+                        <p id="course-description" class="editable-content">
+                            This course provides an introduction to the fundamental concepts of computer science. Topics include algorithmic problem solving, data representation, control structures, functions, recursion, basic data structures, and an introduction to object-oriented programming.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- Course Objectives -->
+                <section class="syllabus-section">
+                    <div class="section-header">
+                        <h2>Course Objectives</h2>
+                        <div class="progress-indicator" id="objectives-progress">
+                            <span class="progress-text">100% Complete</span>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-container">
+                        <ul id="course-objectives" class="editable-list">
+                            <li>Understand fundamental programming concepts and problem-solving techniques</li>
+                            <li>Develop proficiency in a high-level programming language</li>
+                            <li>Design, implement, and test algorithms for solving computational problems</li>
+                            <li>Understand basic data structures and their applications</li>
+                            <li>Apply object-oriented programming principles to software development</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Course Topics -->
+                <section class="syllabus-section">
+                    <div class="section-header">
+                        <h2>Course Topics</h2>
+                        <div class="progress-indicator" id="topics-progress">
+                            <span class="progress-text">75% Complete</span>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: 75%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-container">
+                        <div class="topics-container" id="course-topics">
+                            <!-- Week 1 -->
+                            <div class="topic-week completed">
+                                <div class="week-header">
+                                    <h3>Week 1: Introduction to Programming</h3>
+                                    <div class="week-status">
+                                        <span class="status-badge completed">Completed</span>
+                                        <div class="week-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 100%;"></div>
+                                            </div>
+                                            <span class="progress-text">100%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="week-content">
+                                    <div class="topic-item completed">
+                                        <div class="topic-checkbox">
+                                            <input type="checkbox" id="topic-1-1" checked disabled>
+                                        </div>
+                                        <div class="topic-details">
+                                            <h4>Introduction to Computer Science</h4>
+                                            <p>Overview of computer science, history of computing, and introduction to programming languages.</p>
+                                        </div>
+                                        <div class="topic-resources">
+                                            <a href="#" class="resource-link"><i class="fas fa-file-pdf"></i> Lecture Slides</a>
+                                            <a href="#" class="resource-link"><i class="fas fa-book"></i> Reading Material</a>
+                                        </div>
+                                    </div>
+                                    <div class="topic-item completed">
+                                        <div class="topic-checkbox">
+                                            <input type="checkbox" id="topic-1-2" checked disabled>
+                                        </div>
+                                        <div class="topic-details">
+                                            <h4>Problem Solving and Algorithms</h4>
+                                            <p>Introduction to computational thinking, problem-solving strategies, and algorithm development.</p>
+                                        </div>
+                                        <div class="topic-resources">
+                                            <a href="#" class="resource-link"><i class="fas fa-file-pdf"></i> Lecture Slides</a>
+                                            <a href="#" class="resource-link"><i class="fas fa-code"></i> Code Examples</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Week 2 -->
+                            <div class="topic-week completed">
+                                <div class="week-header">
+                                    <h3>Week 2: Basic Programming Concepts</h3>
+                                    <div class="week-status">
+                                        <span class="status-badge completed">Completed</span>
+                                        <div class="week-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 100%;"></div>
+                                            </div>
+                                            <span class="progress-text">100%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="week-content">
+                                    <div class="topic-item completed">
+                                        <div class="topic-checkbox">
+                                            <input type="checkbox" id="topic-2-1" checked disabled>
+                                        </div>
+                                        <div class="topic-details">
+                                            <h4>Variables and Data Types</h4>
+                                            <p>Understanding variables, primitive data types, and type conversion.</p>
+                                        </div>
+                                        <div class="topic-resources">
+                                            <a href="#" class="resource-link"><i class="fas fa-file-pdf"></i> Lecture Slides</a>
+                                            <a href="#" class="resource-link"><i class="fas fa-code"></i> Code Examples</a>
+                                        </div>
+                                    </div>
+                                    <div class="topic-item completed">
+                                        <div class="topic-checkbox">
+                                            <input type="checkbox" id="topic-2-2" checked disabled>
+                                        </div>
+                                        <div class="topic-details">
+                                            <h4>Operators and Expressions</h4>
+                                            <p>Arithmetic, relational, logical operators, and expression evaluation.</p>
+                                        </div>
+                                        <div class="topic-resources">
+                                            <a href="#" class="resource-link"><i class="fas fa-file-pdf"></i> Lecture Slides</a>
+                                            <a href="#" class="resource-link"><i class="fas fa-tasks"></i> Practice Problems</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Week 3 -->
+                            <div class="topic-week completed">
+                                <div class="week-header">
+                                    <h3>Week 3: Control Structures</h3>
+                                    <div class="week-status">
+                                        <span class="status-badge completed">Completed</span>
+                                        <div class="week-progress">
+                                            <div class="progress-bar">
+                                                <div class="progress" style="width: 100%;"></div>
+                                            </div>
+                                            <span class="progress-text">100%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="week-content">
+                                    <div class="topic-item completed">
+                                        <div class="topic-checkbox">
+                                            <input type="checkbox" id="topic-3-1" checked disabled>
+                                        </div>
+                                        <div class="topic-details">
+                                            <h4>Conditional Statements</h4>
+                                            <p>If-else statements, switch statements, and nested conditionals.</p>
+                                        </div>
+                                        <div class="

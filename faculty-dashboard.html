@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard - Smart Syllabus Tracker</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --secondary-color: #f8fafc;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--secondary-color);
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .sidebar.collapsed .sidebar-header h2 {
+            display: none;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: var(--sidebar-hover);
+        }
+
+        .user-profile {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .sidebar.collapsed .user-profile {
+            padding: 1rem 0.5rem;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 0.75rem;
+            border: 3px solid var(--primary-color);
+        }
+
+        .sidebar.collapsed .user-avatar {
+            width: 40px;
+            height: 40px;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            background: var(--primary-color);
+        }
+
+        .user-info h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-info p {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .sidebar.collapsed .user-info {
+            display: none;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin: 0.25rem 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar.collapsed .sidebar-nav a {
+            padding: 0.875rem 1rem;
+            justify-content: center;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav li.active a {
+            color: white;
+            background: var(--sidebar-hover);
+        }
+
+        .sidebar-nav li.active a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary-color);
+        }
+
+        .sidebar-nav i {
+            width: 20px;
+            text-align: center;
+            margin-right: 0.75rem;
+        }
+
+        .sidebar.collapsed .sidebar-nav i {
+            margin-right: 0;
+        }
+
+        .sidebar.collapsed .sidebar-nav span {
+            display: none;
+        }
+
+        .notification-badge {
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            padding: 0.125rem 0.375rem;
+            font-size: 0.75rem;
+            margin-left: auto;
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar.collapsed .sidebar-footer {
+            padding: 1rem 0.5rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .sidebar.collapsed .btn-outline span {
+            display: none;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed + .main-content {
+            margin-left: 70px;
+        }
+
+        .dashboard-header {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-search {
+            display: flex;
+            align-items: center;
+            background: var(--secondary-color);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            min-width: 300px;
+        }
+
+        .header-search i {
+            color: var(--text-light);
+            margin-right: 0.75rem;
+        }
+
+        .header-search input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 100%;
+            font-size: 0.875rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            padding: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .user-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: background 0.3s ease;
+        }
+
+        .user-dropdown:hover {
+            background: var(--secondary-color);
+        }
+
+        .user-dropdown img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--primary-color);
+        }
+
+        .dashboard-content {
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        /* Overview Cards */
+        .overview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .bg-primary { background: var(--primary-color); }
+        .bg-success { background: var(--success-color); }
+        .bg-warning { background: var(--warning-color); }
+        .bg-info { background: var(--info-color); }
+
+        .card-info h3 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .card-info p {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        /* Dashboard Sections */
+        .dashboard-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            flex: 1;
+        }
+
+        /* Course Management */
+        .course-management-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .course-card {
+            background: var(--secondary-color);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .course-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            flex: 1;
+        }
+
+        .course-code {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .course-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3730a3;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border-color);
+            color: var(--text-dark);
+        }
+
+        .btn-outline:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Activity Section */
+        .activity-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .activity-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--secondary-color);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .activity-content h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-content p {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        /* Progress Overview */
+        .progress-overview {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .chart-container {
+            background: var(--secondary-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--secondary-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-card h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card p {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .action-card {
+            background: var(--secondary-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow);
+            color: var(--text-dark);
+        }
+
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            margin: 0 auto 1rem;
+        }
+
+        .action-card h4 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .dashboard-header {
+                padding: 1rem;
+            }
+            
+            .header-search {
+                min-width: 200px;
+            }
+            
+            .dashboard-content {
+                padding: 1rem;
+            }
+            
+            .overview-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .course-management-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .progress-overview {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Smart Syllabus</h2>
+                <button id="sidebar-toggle" class="sidebar-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar">
+                    <img src="https://ui-avatars.com/api/?name=Faculty+User&background=4f46e5&color=fff" alt="User Avatar" id="user-avatar">
+                </div>
+                <div class="user-info">
+                    <h3 id="user-name">Dr. Sarah Johnson</h3>
+                    <p id="user-role">Faculty</p>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="#dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#courses">
+                            <i class="fas fa-book"></i>
+                            <span>My Courses</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#syllabus">
+                            <i class="fas fa-list-check"></i>
+                            <span>Manage Syllabus</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#students">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>Students</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#calendar">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Calendar</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#notifications">
+                            <i class="fas fa-bell"></i>
+                            <span>Notifications</span>
+                            <span class="notification-badge">5</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#settings">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn-outline">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search courses, students, or topics...">
+                </div>
+                <div class="header-actions">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">5</span>
+                    </div>
+                    <div class="user-dropdown">
+                        <img src="https://ui-avatars.com/api/?name=Faculty+User&background=4f46e5&color=fff" alt="User Avatar" id="header-avatar">
+                        <span id="header-user-name">Dr. Sarah Johnson</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <div class="page-header">
+                    <h1>Faculty Dashboard</h1>
+                    <p>Welcome back, <span id="welcome-name">Dr. Johnson</span>! Here's your teaching overview.</p>
+                </div>
+
+                <!-- Overview Cards -->
+                <div class="overview-cards">
+                    <div class="card">
+                        <div class="card-icon bg-primary">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Active Courses</h3>
+                            <p id="active-courses-count">4</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon bg-success">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Total Students</h3>
+                            <p id="total-students">120</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon bg-warning">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Syllabus Updates</h3>
+                            <p id="syllabus-updates">3</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon bg-info">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Average Progress</h3>
+                            <p id="average-progress">72%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Management Section -->
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Course Management</h2>
+                        <a href="#all-courses" class="btn btn-sm btn-outline">View All</a>
+                    </div>
+                    <div class="course-management-container">
+                        <div class="course-card">
+                            <div class="course-header">
+                                <h3>Introduction to Computer Science</h3>
+                                <span class="course-code">CS101</span>
+                            </div>
+                            <div class="course-stats">
+                                <div class="stat">
+                                    <i class="fas fa-users"></i>
+                                    <span>45 Students</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <span>75% Avg. Progress</span>
+                                </div>
+                            </div>
+                            <div class="course-actions">
+                                <a href="#edit-syllabus-cs101" class="btn btn-sm btn-primary">Edit Syllabus</a>
+                                <a href="#view-students-cs101" class="btn btn-sm btn-outline">View Students</a>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-header">
+                                <h3>Data Structures and Algorithms</h3>
+                                <span class="course-code">CS201</span>
+                            </div>
+                            <div class="course-stats">
+                                <div class="stat">
+                                    <i class="fas fa-users"></i>
+                                    <span>32 Students</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <span>68% Avg. Progress</span>
+                                </div>
+                            </div>
+                            <div class="course-actions">
+                                <a href="#edit-syllabus-cs201" class="btn btn-sm btn-primary">Edit Syllabus</a>
+                                <a href="#view-students-cs201" class="btn btn-sm btn-outline">View Students</a>
+                            </div>
+                        </div>
+
+                        <div class="course-card">
+                            <div class="course-header">
+                                <h3>Database Management Systems</h3>
+                                <span class="course-code">CS301</span>
+                            </div>
+                            <div class="course-stats">
+                                <div class="stat">
+                                    <i class="fas fa-users"></i>
+                                    <span>28 Students</span>
+                                </div>
+                                <div class="stat">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <span>62% Avg. Progress</span>
+                                </div>
+                            </div>
+                            <div class="course-actions">
+                                <a href="#edit-syllabus-cs301" class="btn btn-sm btn-primary">Edit Syllabus</a>
+                                <a href="#view-students-cs301" class="btn btn-sm btn-outline">View Students</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Recent Activity Section -->
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Recent Activity</h2>
+                    </div>
+                    <div class="activity-container">
+                        <div class="activity-card">
+                            <div class="activity-icon bg-info">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Syllabus Updated</h4>
+                                <p>You updated the syllabus for CS201 - Data Structures and Algorithms.</p>
+                                <span class="activity-time">1 hour ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-card">
+                            <div class="activity-icon bg-success">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Student Progress</h4>
+                                <p>15 students completed the "Introduction to Arrays" topic in CS101.</p>
+                                <span class="activity-time">Yesterday</span>
+                            </div>
+                        </div>
+                        <div class="activity-card">
+                            <div class="activity-icon bg-warning">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Reminder Sent</h4>
+                                <p>You sent a reminder about Assignment #3 to CS301 students.</p>
+                                <span class="activity-time">2 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Student Progress Section -->
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Student Progress Overview</h2>
+                        <a href="#all-students" class="btn btn-sm btn-outline">View All Students</a>
+                    </div>
+                    <div class="progress-overview">
+                        <div class="chart-container">
+                            <canvas id="progressChart" width="400" height="300"></canvas>
+                        </div>
+                        <div class="progress-stats">
+                            <div class="stat-card">
+                                <h4>Excellent Progress</h4>
+                                <p>32 Students (>80%)</p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Good Progress</h4>
+                                <p>56 Students (60-80%)</p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Average Progress</h4>
+                                <p>24 Students (40
