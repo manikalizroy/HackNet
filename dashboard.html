@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Syllabus Tracker - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        /* Common Styles for All Pages */
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-color);
+        }
+
+        /* Navigation Styles */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar-brand h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .sidebar-nav li {
+            margin: 0;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-nav a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left-color: rgba(255,255,255,0.5);
+        }
+
+        .sidebar-nav a.active {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border-left-color: white;
+        }
+
+        .sidebar-nav i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-search {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .header-search input {
+            width: 100%;
+            padding: 0.5rem 0.5rem 0.5rem 2.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: var(--light-color);
+        }
+
+        .header-search i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-icon {
+            position: relative;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .notification-icon:hover {
+            background: var(--light-color);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.75rem;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .user-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-dropdown:hover {
+            background: var(--light-color);
+        }
+
+        .user-dropdown img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .dashboard-content {
+            padding: 2rem;
+            flex: 1;
+        }
+
+        /* Page Content Styles */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem auto;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            color: white;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .dashboard-header {
+                padding: 1rem;
+            }
+
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--dark-color);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+
+        /* Page-specific content styles */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .action-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .action-card h4 {
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .action-card p {
+            color: #666;
+            font-size: 0.875rem;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <h3>Syllabus Tracker</h3>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#dashboard" class="nav-link active" data-page="dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+                    <li><a href="#courses" class="nav-link" data-page="courses"><i class="fas fa-book"></i> Courses</a></li>
+                    <li><a href="#syllabus" class="nav-link" data-page="syllabus"><i class="fas fa-file-alt"></i> Syllabus</a></li>
+                    <li><a href="#schedule" class="nav-link" data-page="schedule"><i class="fas fa-calendar"></i> Schedule</a></li>
+                    <li><a href="#assignments" class="nav-link" data-page="assignments"><i class="fas fa-tasks"></i> Assignments</a></li>
+                    <li><a href="#progress" class="nav-link" data-page="progress"><i class="fas fa-chart-bar"></i> Progress</a></li>
+                    <li><a href="#settings" class="nav-link" data-page="settings"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <div class="d-flex align-items-center">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="header-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="user-dropdown">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23667eea'/%3E%3Ccircle cx='12' cy='10' r='3' fill='white'/%3E%3Cpath d='M6.168 18.849A6 6 0 0 1 12 16a6 6 0 0 1 5.832 2.849' fill='white'/%3E%3C/svg%3E" alt="User Avatar">
+                        <span>John Doe</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <!-- Dashboard Page -->
+                <div id="page-dashboard" class="page-content active">
+                    <div class="page-header">
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-subtitle">Welcome back! Here's what's happening with your courses.</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-number">5</div>
+                            <div class="stat-label">Active Courses</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="stat-number">23</div>
+                            <div class="stat-label">Completed Topics</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Pending Assignments</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-number">78%</div>
+                            <div class="stat-label">Average Progress</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="content-card">
+                        <h3>Quick Actions</h3>
+                        <div class="quick-actions">
+                            <a href="#" class="action-card" onclick="showPage('courses')">
+                                <i class="fas fa-plus"></i>
+                                <h4>Add Course</h4>
+                                <p>Create a new course syllabus</p>
+                            </a>
+                            <a href="#" class="action-card" onclick="showPage('schedule')">
+                                <i class="fas fa-calendar-plus"></i>
+                                <h4>View Schedule</h4>
+                                <p>Check your class schedule</p>
+                            </a>
+                            <a href="#" class="action-card" onclick="showPage('assignments')">
+                                <i class="fas fa-clipboard-list"></i>
+                                <h4>Assignments</h4>
+                                <p>View pending assignments</p>
+                            </a>
+                            <a href="#" class="action-card" onclick="showPage('progress')">
+                                <i class="fas fa-chart-bar"></i>
+                                <h4>Progress Report</h4>
+                                <p>Track your learning progress</p>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Courses Page -->
+                <div id="page-courses" class="page-content" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">My Courses</h1>
+                        <p class="page-subtitle">Manage your enrolled courses and syllabi.</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3>Active Courses</h3>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Course
+                            </button>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card" style="cursor: pointer;" onclick="showPage('syllabus')">
+                                <div class="stat-icon" style="background: #667eea;">
+                                    <i class="fas fa-code"></i>
+                                </div>
+                                <h4>CS101</h4>
+                                <p>Introduction to Computer Science</p>
+                                <small class="text-muted">Dr. John Smith • 75% Complete</small>
+                            </div>
+                            <div class="stat-card" style="cursor: pointer;">
+                                <div class="stat-icon" style="background: #28a745;">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
+                                <h4>MATH201</h4>
+                                <p>Calculus II</p>
+                                <small class="text-muted">Dr. Sarah Johnson • 60% Complete</small>
+                            </div>
+                            <div class="stat-card" style="cursor: pointer;">
+                                <div class="stat-icon" style="background: #dc3545;">
+                                    <i class="fas fa-flask"></i>
+                                </div>
+                                <h4>CHEM101</h4>
+                                <p>General Chemistry</p>
+                                <small class="text-muted">Dr. Mike Wilson • 45% Complete</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Syllabus Page -->
+                <div id="page-syllabus" class="page-content" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Course Syllabus</h1>
+                        <p class="page-subtitle">CS101 - Introduction to Computer Science</p>
+                    </div>
+
+                    <div class="content-card">
+                        <h3>Course Information</h3>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p><strong>Instructor:</strong> Dr. John Smith</p>
+                                <p><strong>Email:</strong> john.smith@university.edu</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Schedule:</strong> MWF 10:00-11:30 AM</p>
+                                <p><strong>Location:</strong> Room 302, CS Building</p>
+                            </div>
+                            <div class="col-md-4">
+                                <p><strong>Credits:</strong> 3</p>
+                                <p><strong>Prerequisites:</strong> None</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-card">
+                        <h3>Course Progress</h3>
+                        <div class="progress mb-3">
+                            <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                        </div>
+                        <p>You've completed 9 out of 12 topics in this course.</p>
+                        <button class="btn btn-primary" onclick="showPage('progress')">View Detailed Progress</button>
+                    </div>
+                </div>
+
+                <!-- Schedule Page -->
+                <div id="page-schedule" class="page-content" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Class Schedule</h1>
+                        <p class="page-subtitle">Your weekly class schedule and important dates.</p>
+                    </div>
+
+                    <div class="content-card">
+                        <h3>This Week's Classes</h3>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Monday</th>
+                                        <th>Tuesday</th>
+                                        <th>Wednesday</th>
+                                        <th>Thursday</th>
+                                        <th>Friday</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>9:00-10:30</td>
+                                        <td></td>
+                                        <td>MATH201</td>
+                                        <td></td>
+                                        <td>MATH201</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>10:00-11:30</td>
+                                        <td>CS101</td>
+                                        <td></td>
+                                        <td>CS101</td>
+                                        <td></td>
+                                        <td>CS101</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2:00-3:30</td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>CHEM101</td>
+                                        <td></td>
+                                        <td>CHEM101</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assignments Page -->
+                <div id="page-assignments" class="page-content" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Assignments</h1>
+                        <p class="page-subtitle">Track your assignments and deadlines.</p>
+                    </div>
+
+                    <div class="content-card">
+                        <h3>Upcoming Assignments</h3>
+                        <div class="list-group">
+                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">Programming Assignment 3</h5>
+                                    <p class="mb-1">CS101 - Functions and Recursion</p>
+                                    <small class="text-danger">Due: Tomorrow, 11:59 PM</small>
+                                </div>
+                                <span class="badge bg-danger">Urgent</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">Calculus Problem Set 5</h5>
+                                    <p class="mb-1">MATH201 - Integration Techniques</p>
+                                    <small class="text-warning">Due: Friday, 11:59 PM</small>
+                                </div>
+                                <span class="badge bg-warning">Soon</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">Lab Report 2</h5>
+                                    <p class="mb-1">CHEM101 - Acid-Base Reactions</p>
+                                    <small class="text-success">Due: Next Monday, 11:59 PM</small>
+                                </div>
+                                <span class="badge bg-success">On Track</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Page -->
+                <div id="page-progress" class="page-content" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Learning Progress</h1>
+                        <p class="page-subtitle">Track your academic progress across all courses.</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>CS101</h4>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" style="width: 75%;">75%</div>
+                            </div>
+                            <small>9/12 topics completed</small>
+                        </div>
+                        <div class="stat-card">
+                            <h4>MATH201</h4>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-success" style="width: 60%;">60%</div>
+                            </div>
+                            <small>6/10 topics completed</small>
+                        </div>
+                        <div class="stat-card">
+                            <h4>CHEM101</h4>
+                            <div class="progress mb-2">
+                                <div class="progress-bar bg-warning" style="width: 45%;">45%</div>
+                            </div>
+                            <small>5/11 topics completed</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div id="page-settings" class="page-content" style="display: none;">
+                    <div class="page-header">
+                        <h1 class="page-title">Settings</h1>
+                        <p class="page-subtitle">Manage your account and preferences.</p>
+                    </div>
+
+                    <div class="content-card">
+                        <h3>Account Settings</h3>
+                        <form>
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control" value="John Doe">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" value="john.doe@student.edu">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Student ID</label>
+                                <input type="text" class="form-control" value="STU123456">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+
+                    <div class="content-card">
+                        <h3>Notification Preferences</h3>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="emailNotifs" checked>
+                            <label class="form-check-label" for="emailNotifs">
+                                Email notifications for assignments
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="reminderNotifs" checked>
+                            <label class="form-check-label" for="reminderNotifs">
+                                Deadline reminders
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="progressNotifs">
+                            <label class="form-check-label" for="progressNotifs">
+                                Weekly progress reports
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Navigation System
+        function showPage(pageName) {
+            // Hide all page contents
+            const allPages = document.querySelectorAll('.page-content');
+            allPages.forEach(page => {
+                page.style.display = 'none';
+                page.classList.remove('active');
+            });
+
+            // Show the selected page
+            const selectedPage = document.getElementById(`page-${pageName}`);
+            if (selectedPage) {
+                selectedPage.style.display = 'block';
+                selectedPage.classList.add('active');
+            }
+
+            // Update navigation active state
+            const allNavLinks = document.querySelectorAll('.nav-link');
+            allNavLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Set active nav link
+            const activeNavLink = document.querySelector(`[data-page="${pageName}"]`);
+            if (activeNavLink) {
+                activeNavLink.classList.add('active');
+            }
+
+            // Update URL hash
+            window.location.hash = pageName;
+
+            // Close mobile sidebar if open
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('show');
+            }
+        }
+
+        // Handle navigation clicks
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageName = this.dataset.page;
+                showPage(pageName);
+            });
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                showPage(hash);
+            } else {
+                showPage('dashboard');
+            }
+        });
+
+        // Initialize page based on URL hash
+        window.addEventListener('load', function() {
+            const hash = window.location.hash.substring(1);
+            if (hash && document.getElementById(`page-${hash}`)) {
+                showPage(hash);
+            } else {
+                showPage('dashboard');
+            }
+        });
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                const toggleButton = document.querySelector('.mobile-menu-toggle');
+                
+                if (!sidebar.contains(e.target) && !toggleButton.contains(e.target)) {
+                    sidebar.classList.remove('show');
+                }
+            }
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                document.getElementById('sidebar').classList.remove('show');
+            }
+        });
+
+        // Search functionality
+        document.querySelector('.header-search input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            console.log('Searching for:', searchTerm);
+            // Add search logic here
+        });
+
+        // Notification click handler
+        document.querySelector('.notification-icon').addEventListener('click', function() {
+            alert('You have 3 new notifications:\n1. Assignment due tomorrow\n2. New course material uploaded\n3. Grade posted for Quiz 2');
+        });
+
+        // User dropdown handler
+        document.querySelector('.user-dropdown').addEventListener('click', function() {
+            const dropdown = document.createElement('div');
+            dropdown.innerHTML = `
+                <div class="dropdown-menu show" style="position: absolute; right: 0; top: 100%; background: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 200px; z-index: 1000;">
+                    <a class="dropdown-item" href="#" style="display: block; padding: 0.75rem 1rem; text-decoration: none; color: #333;" onclick="showPage('settings')">
+                        <i class="fas fa-user"></i> Profile
+                    </a>
+                    <a class="dropdown-item" href="#" style="display: block; padding: 0.75rem 1rem; text-decoration: none; color: #333;" onclick="showPage('settings')">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                    <div class="dropdown-divider" style="height: 1px; background: #eee; margin: 0.5rem 0;"></div>
+                    <a class="dropdown-item" href="#" style="display: block; padding: 0.75rem 1rem; text-decoration: none; color: #dc3545;" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            `;
+            
+            // Remove existing dropdown
+            const existingDropdown = document.querySelector('.dropdown-menu');
+            if (existingDropdown) {
+                existingDropdown.remove();
+            } else {
+                this.style.position = 'relative';
+                this.appendChild(dropdown);
+                
+                // Close dropdown when clicking outside
+                setTimeout(() => {
+                    document.addEventListener('click', function closeDropdown(e) {
+                        if (!dropdown.contains(e.target)) {
+                            dropdown.remove();
+                            document.removeEventListener('click', closeDropdown);
+                        }
+                    });
+                }, 100);
+            }
+        });
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                alert('Logged out successfully!');
+                // Redirect to login page or clear session
+                window.location.reload();
+            }
+        }
+
+        // Course card interactions
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.action-card')) {
+                e.preventDefault();
+                const card = e.target.closest('.action-card');
+                card.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    card.style.transform = '';
+                }, 150);
+            }
+        });
+
+        // Form submissions
+        document.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = e.target;
+            
+            // Simulate form submission
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                alert('Settings saved successfully!');
+            }, 1500);
+        });
+
+        // Progress bar animations
+        function animateProgressBars() {
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                bar.style.transition = 'width 1s ease-in-out';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        }
+
+        // Animate progress bars when showing progress page
+        const originalShowPage = showPage;
+        showPage = function(pageName) {
+            originalShowPage(pageName);
+            if (pageName === 'progress') {
+                setTimeout(animateProgressBars, 300);
+            }
+        };
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                
+                if (targetElement && targetElement.classList.contains('page-content')) {
+                    e.preventDefault();
+                    showPage(targetId.replace('page-', ''));
+                }
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Alt + D for Dashboard
+            if (e.altKey && e.key === 'd') {
+                e.preventDefault();
+                showPage('dashboard');
+            }
+            // Alt + C for Courses
+            if (e.altKey && e.key === 'c') {
+                e.preventDefault();
+                showPage('courses');
+            }
+            // Alt + S for Schedule
+            if (e.altKey && e.key === 's') {
+                e.preventDefault();
+                showPage('schedule');
+            }
+            // Alt + A for Assignments
+            if (e.altKey && e.key === 'a') {
+                e.preventDefault();
+                showPage('assignments');
+            }
+            // Alt + P for Progress
+            if (e.altKey && e.key === 'p') {
+                e.preventDefault();
+                showPage('progress');
+            }
+        });
+
+        // Add loading states for better UX
+        function addLoadingState(element) {
+            const originalContent = element.innerHTML;
+            element.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            element.style.opacity = '0.7';
+            
+            return function removeLoadingState() {
+                element.innerHTML = originalContent;
+                element.style.opacity = '1';
+            };
+        }
+
+        // Add hover effects to cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.stat-card, .action-card, .content-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
+                    this.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = '';
+                });
+            });
+        });
+
+        // Auto-save functionality for forms
+        let autoSaveTimeout;
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('input, textarea, select')) {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    console.log('Auto-saving...', e.target.name, e.target.value);
+                    // Add auto-save logic here
+                }, 2000);
+            }
+        });
+
+        // Add confirmation dialogs for destructive actions
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('.btn-danger') || e.target.closest('.btn-danger')) {
+                const action = e.target.textContent || e.target.closest('.btn-danger').textContent;
+                if (!confirm(`Are you sure you want to ${action.toLowerCase()}?`)) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+        });
+
+        // Initialize tooltips and other Bootstrap components
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize any Bootstrap tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+
+        console.log('Smart Syllabus Tracker initialized successfully!');
+    </script>
+</body>
+</html>
