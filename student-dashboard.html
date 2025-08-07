@@ -975,4 +975,88 @@
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div class="update-content">
-                                
+                                                                <h4>Upcoming Deadline</h4>
+                                <p>Assignment 3 for CS301 is due tomorrow. Make sure to submit it on time.</p>
+                                <span class="update-time">3 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Calendar Section -->
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Academic Calendar</h2>
+                        <a href="#calendar-full" class="btn btn-sm btn-outline">View Full Calendar</a>
+                    </div>
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <h3>Upcoming Events</h3>
+                        </div>
+                        <div class="calendar-events">
+                            <div class="event-card">
+                                <div class="event-date">
+                                    <span class="event-day">08</span>
+                                    <span class="event-month">AUG</span>
+                                </div>
+                                <div class="event-details">
+                                    <h4>Midterm Exam - CS101</h4>
+                                    <p><i class="fas fa-clock"></i> 10:00 AM</p>
+                                    <p><i class="fas fa-map-marker-alt"></i> Room 204</p>
+                                </div>
+                            </div>
+                            <div class="event-card">
+                                <div class="event-date">
+                                    <span class="event-day">12</span>
+                                    <span class="event-month">AUG</span>
+                                </div>
+                                <div class="event-details">
+                                    <h4>Hackathon Workshop</h4>
+                                    <p><i class="fas fa-clock"></i> 2:00 PM</p>
+                                    <p><i class="fas fa-map-marker-alt"></i> Lab A</p>
+                                </div>
+                            </div>
+                            <div class="event-card">
+                                <div class="event-date">
+                                    <span class="event-day">15</span>
+                                    <span class="event-month">AUG</span>
+                                </div>
+                                <div class="event-details">
+                                    <h4>Independence Day</h4>
+                                    <p><i class="fas fa-flag"></i> National Holiday</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Sidebar Toggle Script -->
+    <script>
+        document.getElementById('sidebar-toggle').addEventListener('click', function () {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+
+            const mainContent = document.querySelector('.main-content');
+            if (sidebar.classList.contains('collapsed')) {
+                mainContent.style.marginLeft = '70px';
+            } else {
+                mainContent.style.marginLeft = '280px';
+            }
+        });
+
+        // Optional: Replace name/avatar dynamically if user is logged in
+        const userName = "Alex Smith";
+        document.getElementById("user-name").innerText = userName;
+        document.getElementById("welcome-name").innerText = userName.split(' ')[0];
+        document.getElementById("header-user-name").innerText = userName;
+        document.getElementById("user-avatar").src = `https://ui-avatars.com/api/?name=${userName.replace(' ', '+')}&background=4f46e5&color=fff`;
+        document.getElementById("header-avatar").src = `https://ui-avatars.com/api/?name=${userName.replace(' ', '+')}&background=4f46e5&color=fff`;
+    </script>
+</body>
+</html>

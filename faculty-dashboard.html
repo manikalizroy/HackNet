@@ -961,4 +961,89 @@
                             </div>
                             <div class="stat-card">
                                 <h4>Average Progress</h4>
-                                <p>24 Students (40
+                                <p>24 Students (40-60%)</p>
+                            </div>
+                            <div class="stat-card">
+                                <h4>Needs Improvement</h4>
+                                <p>8 Students (<40%)</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Quick Actions Section -->
+                <section class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Quick Actions</h2>
+                    </div>
+                    <div class="quick-actions">
+                        <a href="#add-course" class="action-card">
+                            <div class="action-icon bg-primary">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <h4>Add New Course</h4>
+                        </a>
+                        <a href="#send-reminder" class="action-card">
+                            <div class="action-icon bg-warning">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <h4>Send Reminder</h4>
+                        </a>
+                        <a href="#update-progress" class="action-card">
+                            <div class="action-icon bg-success">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h4>Update Progress</h4>
+                        </a>
+                        <a href="#upload-material" class="action-card">
+                            <div class="action-icon bg-info">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <h4>Upload Material</h4>
+                        </a>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sidebar Toggle Script
+        document.getElementById('sidebar-toggle').addEventListener('click', function () {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('collapsed');
+            document.querySelector('.main-content').classList.toggle('collapsed');
+        });
+
+        // Progress Chart Example (Dummy Data)
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        const progressChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Excellent', 'Good', 'Average', 'Needs Improvement'],
+                datasets: [{
+                    label: 'Student Progress',
+                    data: [32, 56, 24, 8],
+                    backgroundColor: [
+                        '#10b981',
+                        '#3b82f6',
+                        '#f59e0b',
+                        '#ef4444'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

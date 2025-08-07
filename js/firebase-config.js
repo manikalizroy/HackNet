@@ -2,14 +2,14 @@
 
 // Firebase configuration object
 // Replace these values with your actual Firebase project configuration
-window.firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
+const firebaseConfig = {
+  apiKey: "AIzaSyAIzo1Ft1BIzJyL5ccbZAQVstgnvhRZSUc",
+  authDomain: "smartsyllo-7d806.firebaseapp.com",
+  projectId: "smartsyllo-7d806",
+  storageBucket: "smartsyllo-7d806.firebasestorage.app",
+  messagingSenderId: "15668034790",
+  appId: "1:15668034790:web:8f4270c644fb9bb07ccf27",
+  measurementId: "G-EH7WGGX9NT"
 };
 
 // Initialize Firebase
@@ -23,6 +23,8 @@ function initializeFirebase() {
   const auth = firebase.auth();
   const db = firebase.firestore();
   const storage = firebase.storage();
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);    
   
   // Enable Firestore offline persistence if supported
   db.enablePersistence()
