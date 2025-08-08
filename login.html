@@ -172,6 +172,10 @@
         <!-- Login Form -->
         <div class="auth-form active fade-in" id="login-form">
           <h3 class="text-center mb-4">Login to Your Account</h3>
+          <p style="color: red; font-size: 0.9rem;">
+            <em>This is a student project demo. Do not enter real credentials.</em>
+          </p>
+
           <form id="login-form-element" novalidate>
             <div class="role-selector d-flex justify-content-around mb-4">
               <label><input type="radio" name="role" value="student" checked> Student</label>
@@ -198,15 +202,12 @@
               <div class="spinner-border spinner-border-sm ms-2 d-none" id="login-spinner"></div>
             </button>
           </form>
-          <div class="auth-separator text-center"><span>OR</span></div>
-          <button type="button" id="google-login" class="btn btn-outline-danger w-100">
-            <i class="fab fa-google me-2"></i> Login with Google
-          </button>
-        </div>
+          
 
         <!-- Register Form -->
         <div class="auth-form" id="register-form" style="display: none;">
           <h3 class="text-center mb-4">Create an Account</h3>
+          
           <form id="register-form-element" novalidate>
             <div class="role-selector d-flex justify-content-around mb-4">
               <label><input type="radio" name="reg-role" value="student" checked> Student</label>
